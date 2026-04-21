@@ -1,0 +1,79 @@
+# q_config.yaml
+# Q-learning focused configuration.
+#
+# Uses the same smallClassic training setup as the DQN baseline so the tabular
+# agent is judged on a reachable map with one manageable ghost.
+
+env:
+  layout: "smallClassic"
+  num_ghosts: 1
+  timeout: 60
+
+training:
+  num_episodes: 2000
+  eval_episodes: 10
+  save_interval: 100
+  plot_interval: 200
+  results_dir: "./results"
+  max_steps_per_episode: 500
+
+hyperparameters:
+  # Shared
+  gamma: 0.95
+  learning_rate: 0.0001
+
+  # Tabular (Q-learning, SARSA)
+  alpha: 0.25
+  epsilon_start: 1.0
+  epsilon_end: 0.05
+  epsilon_decay_episodes: 500
+  initial_q: 5.0
+  avoid_stop: true
+
+  # DQN-only fields kept for schema compatibility
+  batch_size: 64
+  buffer_capacity: 50000
+  epsilon_decay_steps: 20000
+  warmup_steps: 500
+  target_update_interval: 1
+  target_update_tau: 0.005
+  reward_scale: 0.1
+  reward_clip: 50.0
+
+  # PPO-only fields kept for schema compatibility
+  ppo_learning_rate: 0.0003
+  ppo_learning_rate_end: 0.00008
+  ppo_lr_decay_updates: 150
+  ppo_batch_size: 128
+  ppo_epochs: 4
+  ppo_update_episodes: 5
+  ppo_clip: 0.2
+  ppo_value_clip: 0.2
+  gae_lambda: 0.95
+  entropy_coef: 0.01
+  ppo_entropy_coef_start: 0.03
+  ppo_entropy_coef_end: 0.005
+  ppo_entropy_decay_updates: 300
+  value_loss_coef: 0.5
+  ppo_reward_scale: 0.1
+  ppo_reward_clip: 50.0
+  ppo_avoid_stop: true
+  ppo_max_grad_norm: 0.5
+
+multiagent:
+  mode: "random"
+  alternating_interval: 100
+
+hierarchical:
+  goal_interval: 5
+  meta_lr: 0.0001
+  meta_gamma: 0.99
+  meta_epsilon_start: 1.0
+  meta_epsilon_end: 0.1
+  meta_epsilon_decay_steps: 5000
+  skill_alpha: 0.3
+  skill_epsilon: 0.15
+  skill_gamma: 0.95
+  ghost_goal_interval: 15
+  ghost_epsilon: 0.2
+  ghost_alpha: 0.2

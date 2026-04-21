@@ -1,0 +1,84 @@
+# dqn_config.yaml
+# DQN-optimised training configuration
+#
+# Why different from config.yaml?
+#   - smallClassic: ~60 food pellets vs 244 in mediumClassic → smaller state space,
+#     reachable wins within 2000 episodes
+#   - 1 RandomGhost: still provides an adversary but not a highly directed hunter
+#   - Faster epsilon decay (20000 steps) to exploit earlier on the simpler map
+#   - Lower epsilon_end (0.01) for maximum exploitation at convergence
+#   - Smaller warmup (500) since the map is smaller and buffer fills faster
+
+env:
+  layout: "smallClassic"   # 21×11 grid, ~60 food pellets
+  num_ghosts: 1             # one random ghost (still an adversary, but manageable)
+  timeout: 60
+
+training:
+  num_episodes: 2000
+  eval_episodes: 10
+  save_interval: 100
+  plot_interval: 200
+  results_dir: "./results"
+  max_steps_per_episode: 500  # smallClassic 20×7: 500 steps is more than enough
+
+hyperparameters:
+  # Shared
+  gamma: 0.99
+  learning_rate: 0.0001
+
+  # Tabular (Q-learning, SARSA) — unused by DQN but kept for schema consistency
+  alpha: 0.1
+  epsilon_start: 1.0
+  epsilon_end: 0.01          # more exploitation vs 0.05 in main config
+  epsilon_decay_episodes: 500
+
+  # DQN
+  batch_size: 64
+  buffer_capacity: 50000
+  epsilon_decay_steps: 20000  # faster decay; smallClassic needs less exploration
+  warmup_steps: 500           # smaller map → buffer fills faster
+  target_update_interval: 1   # soft Polyak update every step
+  target_update_tau: 0.005
+  reward_scale: 0.1           # food=1, death/win≈50 after scaling
+  reward_clip: 50.0
+  avoid_stop: true            # movement-only policy unless Stop is the only action
+
+  # PPO — unused by DQN but kept for schema consistency
+  ppo_learning_rate: 0.0003
+  ppo_learning_rate_end: 0.00008
+  ppo_lr_decay_updates: 150
+  ppo_batch_size: 128
+  ppo_epochs: 4
+  ppo_update_episodes: 5
+  ppo_clip: 0.2
+  ppo_value_clip: 0.2
+  gae_lambda: 0.95
+  entropy_coef: 0.01
+  ppo_entropy_coef_start: 0.03
+  ppo_entropy_coef_end: 0.005
+  ppo_entropy_decay_updates: 300
+  value_loss_coef: 0.5
+  ppo_reward_scale: 0.1
+  ppo_reward_clip: 50.0
+  ppo_avoid_stop: true
+  ppo_max_grad_norm: 0.5
+
+multiagent:
+  mode: "random"             # falls through to RandomGhost
+  alternating_interval: 100
+
+# ── Hierarchical RL settings ─────────────────────────────────────────────────
+hierarchical:
+  goal_interval: 5
+  meta_lr: 0.0001
+  meta_gamma: 0.99
+  meta_epsilon_start: 1.0
+  meta_epsilon_end: 0.1
+  meta_epsilon_decay_steps: 5000
+  skill_alpha: 0.3
+  skill_epsilon: 0.15
+  skill_gamma: 0.95
+  ghost_goal_interval: 15
+  ghost_epsilon: 0.2
+  ghost_alpha: 0.2

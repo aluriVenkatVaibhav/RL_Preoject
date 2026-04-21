@@ -1,0 +1,47 @@
+env:
+  layout: "smallClassic"
+  num_ghosts: 1
+  timeout: 60
+
+training:
+  num_episodes: 8      # 2 episodes per phase (8 / 4)
+  eval_episodes: 1
+  save_interval: 8
+  results_dir: "./results"
+
+hyperparameters:
+  gamma: 0.99
+  learning_rate: 0.0005
+  alpha: 0.1
+  epsilon_start: 1.0
+  epsilon_end: 0.05
+  epsilon_decay_episodes: 1000
+  batch_size: 32
+  buffer_capacity: 5000
+  target_update_interval: 100
+  ppo_epochs: 4
+  ppo_clip: 0.2
+  gae_lambda: 0.95
+  entropy_coef: 0.01
+  value_loss_coef: 0.5
+  ghost_goal_interval: 5
+  ghost_epsilon: 0.3
+  ghost_alpha: 0.3
+
+multiagent:
+  mode: "baseline"
+  alternating_interval: 2
+
+hierarchical:
+  goal_interval: 3
+  meta_lr: 0.0001
+  meta_gamma: 0.99
+  meta_epsilon_start: 1.0
+  meta_epsilon_end: 0.1
+  meta_epsilon_decay_steps: 500
+  skill_alpha: 0.3
+  skill_epsilon: 0.2
+  skill_gamma: 0.95
+  ghost_goal_interval: 5
+  ghost_epsilon: 0.3
+  ghost_alpha: 0.3

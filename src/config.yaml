@@ -1,0 +1,76 @@
+# config.yaml
+# Hyperparameters and configurations for Pacman RL project
+
+env:
+  layout: "mediumClassic"
+  num_ghosts: 2
+  timeout: 60
+
+training:
+  num_episodes: 2000
+  eval_episodes: 10
+  save_interval: 100
+  plot_interval: 200
+  results_dir: "./results"
+  max_steps_per_episode: 2000  # mediumClassic: cap to prevent stuck episodes
+
+hyperparameters:
+  # Shared
+  gamma: 0.99
+  learning_rate: 0.0001      # Reduced from 5e-4; stable for CNN
+  
+  # Tabular (Q-learning, SARSA)
+  alpha: 0.1
+  epsilon_start: 1.0
+  epsilon_end: 0.05
+  epsilon_decay_episodes: 1000
+
+  # DQN
+  batch_size: 64
+  buffer_capacity: 50000
+  epsilon_decay_steps: 50000  # Slow decay — spans most of training
+  warmup_steps: 1000          # Fill buffer before learning begins
+  target_update_interval: 1   # Soft update runs every step
+  target_update_tau: 0.005    # Polyak blend coefficient
+  reward_scale: 0.1           # Keep DQN targets in a stable numeric range
+  reward_clip: 50.0           # After scaling, cap extreme terminal/event rewards
+  avoid_stop: true            # Do not explore/choose Stop when movement is available
+  
+  # PPO
+  ppo_learning_rate: 0.0003
+  ppo_learning_rate_end: 0.00008
+  ppo_lr_decay_updates: 150
+  ppo_batch_size: 128
+  ppo_epochs: 4
+  ppo_update_episodes: 5
+  ppo_clip: 0.2
+  ppo_value_clip: 0.2
+  gae_lambda: 0.95
+  entropy_coef: 0.01
+  ppo_entropy_coef_start: 0.03
+  ppo_entropy_coef_end: 0.005
+  ppo_entropy_decay_updates: 300
+  value_loss_coef: 0.5
+  ppo_reward_scale: 0.1
+  ppo_reward_clip: 50.0
+  ppo_avoid_stop: true
+  ppo_max_grad_norm: 0.5
+  
+multiagent:
+  mode: "baseline" # Options: baseline (RL max vs Rule ghosts), alternating (RL max vs RL ghosts)
+  alternating_interval: 100 # Swap training every N episodes
+
+# ── Hierarchical RL settings ─────────────────────────────────────────────────
+hierarchical:
+  goal_interval: 5            # How often meta-controller re-selects goal (steps)
+  meta_lr: 0.0001             # Meta-controller DQN learning rate
+  meta_gamma: 0.99
+  meta_epsilon_start: 1.0
+  meta_epsilon_end: 0.1
+  meta_epsilon_decay_steps: 5000
+  skill_alpha: 0.3            # Skill Q-learning learning rate
+  skill_epsilon: 0.15         # Skill exploration epsilon
+  skill_gamma: 0.95
+  ghost_goal_interval: 15     # How often ghost meta selects goal
+  ghost_epsilon: 0.2
+  ghost_alpha: 0.2
